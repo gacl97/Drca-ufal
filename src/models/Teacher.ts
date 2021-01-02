@@ -5,14 +5,12 @@ import Subject from './Subject';
 
 @Entity('teachers')
 class Teacher {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => Departament, departament => departament.id)
   @JoinColumn({ name: 'departament_id'})
   departament: Departament;
-
 
   @OneToMany(() => Subject, subject => subject.teacher)
   subjects: Subject[];
