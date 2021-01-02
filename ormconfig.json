@@ -13,5 +13,8 @@
   ],
   "cli": {
 		"migrationsDir": "./src/database/migrations"
-	}
+  },
+  "autoLoadEntities": true,
+  "synchronize": true,
+  "logging": true
 }
