@@ -36,7 +36,7 @@ class Student {
   study_shift: StudyShiftType;
 
   @Column('int')
-  current_credits: StudyShiftType;
+  current_credits: number;
 
   @CreateDateColumn()
   created_at: Date;
