@@ -32,14 +32,14 @@ class Subject {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ unique: true })
   code: string;
 
   @Column('int')
   credits: number;
 
   @Column({ unique: true })
-  minimum_credits: string;
+  minimum_credits: number;
 
   @Column('int')
   subject_type: SubjectType;
