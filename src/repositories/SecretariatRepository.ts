@@ -42,6 +42,16 @@ class SecretariatRepository implements ISecretariatRepository {
 
     return secretariats;
   }
+
+  public async findById(id: string): Promise<Secretariat | undefined> {
+    const secretariat = await this.ormRepository.findOne({
+      where: {
+        id,
+      }
+    });
+
+    return secretariat;
+  }
 }
 
 export default SecretariatRepository;
