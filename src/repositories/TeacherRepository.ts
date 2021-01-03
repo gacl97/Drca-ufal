@@ -48,15 +48,15 @@ class TeacherRepository implements ITeacherRepository {
     return teacher;
   }
 
-  // public async findById(id: string): Promise<Departament | undefined> {
-  //   const departament = await this.ormRepository.findOne({
-  //     where: {
-  //       id,
-  //     }
-  //   });
+  public async findById(id: string): Promise<Teacher | undefined> {
+    const teacher = await this.ormRepository.findOne({
+      where: {
+        id,
+      }
+    });
 
-  //   return departament;
-  // }
+    return teacher;
+  }
 }
 
 export default TeacherRepository;
