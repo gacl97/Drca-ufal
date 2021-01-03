@@ -9,6 +9,9 @@ import SecretariatRepository from '../repositories/SecretariatRepository';
 import ITeacherRepository from '../repositories/ITeacherRepository';
 import TeacherRepository from '../repositories/TeacherRepository';
 
+import IStudentRepository from '../repositories/IStudentRepository';
+import StudentRepository from '../repositories/StudentRepository';
+
 
 container.registerSingleton<IDepartamentRepository>(
   'DepartamentRepository',
@@ -23,4 +26,9 @@ container.registerSingleton<ISecretariatRepository>(
 container.registerSingleton<ITeacherRepository>(
   'TeacherRepository',
   TeacherRepository
+);
+
+container.registerSingleton<IStudentRepository>(
+  'StudentRepository',
+  StudentRepository
 );
