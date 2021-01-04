@@ -4,6 +4,7 @@ import SecretariatType from './enums/SecretariatType';
 
 import Departament from './Departament';
 import Subject from './Subject';
+import Student from './Student';
 
 @Entity('secretariats')
 class Secretariat {
@@ -20,6 +21,9 @@ class Secretariat {
 
   @OneToMany(() => Subject, subject => subject.secretariat)
   subjects: Subject[];
+
+  @OneToMany(() => Student, student => student.secretariat)
+  students: Student[];
 
   @Column()
   departament_id: string;
