@@ -38,12 +38,12 @@ class SubjectsService {
       throw new AppError('Subject type not found', 404);
     }
 
-    if(credits < 30 || credits > 120) {
-      throw new AppError('Credits must be greater than or equal to 30 and less than or equal to 120.');
+    if(credits < 0 || credits > 120) {
+      throw new AppError('Credits must be greater than or equal to 0 and less than or equal to 120.');
     }
 
-    if(minimum_credits < 30) {
-      throw new AppError('Minimum credit must be greater than or equal to 30.');
+    if(minimum_credits < 0) {
+      throw new AppError('Minimum credit must be greater than or equal to 0.');
     }
 
     const subjectCodeExists = await this.subjectRepository.findByCode(code);
