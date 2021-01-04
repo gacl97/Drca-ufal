@@ -4,7 +4,7 @@ import StudentsService from '../services/StudentsService';
 
 class StudentsController {
   public async create(request: Request, response: Response): Promise<Response> {
-    const { name, cpf, departament_id, email, study_shift } = request.body;
+    const { name, cpf, departament_id, email, study_shift,secretariat_id } = request.body;
 
     const createStudent = container.resolve(StudentsService);
 
@@ -13,7 +13,8 @@ class StudentsController {
       cpf,
       departament_id,
       email,
-      study_shift
+      study_shift,
+      secretariat_id
     });
 
     return response.json(student);
