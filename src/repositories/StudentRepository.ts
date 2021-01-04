@@ -42,21 +42,22 @@ class StudentRepository implements IStudentRepository {
 
   public async findAll(): Promise<Student[]> {
     const students = await this.ormRepository.find({
-      relations: ['departament']
+      relations: ['departament', 'secretariat']
     });
 
     return students;
   }
 
-  // public async findById(id: string): Promise<Departament | undefined> {
-  //   const departament = await this.ormRepository.findOne({
-  //     where: {
-  //       id,
-  //     }
-  //   });
+  public async findById(id: string): Promise<Student | undefined> {
+    const student = await this.ormRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['secretariat']
+    });
 
-  //   return departament;
-  // }
+    return student;
+  }
 }
 
 export default StudentRepository;
