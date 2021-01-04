@@ -5,5 +5,6 @@ export default interface IStudentRepository {
   create(data: ICreateStudentDTO): Promise<Student>;
   findByCpf(cpf: string): Promise<Student | undefined>;
   findByEmail(email: string): Promise<Student | undefined>;
+  findById(id: string): Promise<Student | undefined>;
   findAll(): Promise<Student[]>;
 }
