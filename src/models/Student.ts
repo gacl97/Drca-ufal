@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 import Departament from './Departament';
 import StudyShiftType from './enums/StudyShiftType';
+import Secretariat from './Secretariat';
 import StudentToSubject from './StudentToSubject';
 
 @Entity('students')
@@ -16,6 +17,13 @@ class Student {
 
   @Column()
   departament_id: string;
+
+  @ManyToOne(() => Secretariat, secretariat => secretariat.id)
+  @JoinColumn({ name: 'secretariat_id' })
+  secretariat: Secretariat;
+
+  @Column()
+  secretariat_id: string;
 
   @OneToMany(() => StudentToSubject, studentToSubject => studentToSubject.student)
   studentToSubject: StudentToSubject[];
