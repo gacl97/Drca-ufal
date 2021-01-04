@@ -10,16 +10,16 @@ class StudentToSubject {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('float')
+  @Column('float', { nullable: true})
   ab1: number;
 
-  @Column('float')
+  @Column('float', { nullable: true})
   ab2: number;
   
-  @Column('float')
+  @Column('float', { nullable: true})
   revaluation: number;
 
-  @Column('float')
+  @Column('float', { nullable: true})
   final_grade: number;
 
   @Column('int')
