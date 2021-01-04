@@ -6,12 +6,14 @@ import StudyShiftType from '../models/enums/StudyShiftType';
 
 import Student from '../models/Student';
 import IDeparmentRepository from '../repositories/IDepartamentRepository';
+import ISecretariatRepository from '../repositories/ISecretariatRepository';
 import IStudentRepository from '../repositories/IStudentRepository';
 
 interface IRequestDTO {
   name: string;
   cpf: string;
   departament_id: string;
+  secretariat_id: string;
   email: string;
   study_shift: StudyShiftType;
 }
@@ -23,13 +25,21 @@ class StudentsService {
     @inject('StudentRepository')
     private studentRepository: IStudentRepository,
     @inject('DepartamentRepository')
-    private departamentRepository: IDeparmentRepository
+    private departamentRepository: IDeparmentRepository,
+    @inject('SecretariatRepository')
+    private secretariatRepository: ISecretariatRepository
   ) {}
 
-  public async createStudent({ name, cpf, departament_id, email, study_shift }: IRequestDTO): Promise<Student> {
+  public async createStudent({ name, cpf, departament_id, email, study_shift, secretariat_id }: IRequestDTO): Promise<Student> {
 
     if(!StudyShiftType[study_shift]) {
       throw new AppError('Study shift not found', 404)
+    }
+
+    const secretariatExists = await this.secretariatRepository.findById(secretariat_id);
+
+    if(!secretariatExists) {
+      throw new AppError('Secretariat not found.', 404);
     }
 
     let studentExists = await this.studentRepository.findByCpf(cpf);
@@ -59,13 +69,14 @@ class StudentsService {
       name,
       matriculation,
       current_credits: 0,
-      study_shift
+      study_shift,
+      secretariat_id
     });
 
     Object.assign(student, {
       ...student,
       study_shift: StudyShiftType[student.study_shift]
-    })
+    });
 
     return student;
   }
