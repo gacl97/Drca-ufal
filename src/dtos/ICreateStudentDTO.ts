@@ -6,6 +6,7 @@ export default interface ICreateStudentDTO {
   cpf: string;
   matriculation: string;
   departament_id: string;
+  secretariat_id: string;
   study_shift: StudyShiftType;
   current_credits: number;
 }
