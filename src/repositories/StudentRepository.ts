@@ -53,7 +53,7 @@ class StudentRepository implements IStudentRepository {
       where: {
         id,
       },
-      relations: ['secretariat']
+      relations: ['secretariat', 'departament']
     });
 
     return student;
