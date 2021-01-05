@@ -1,13 +1,16 @@
 import { inject, injectable } from 'tsyringe';
 
 import AppError from '../errors/AppError';
-import SecretariatType from '../models/enums/SecretariatType';
+import ConceptSubjectType from '../models/enums/ConceptSubjectType';
+import StudyShiftType from '../models/enums/StudyShiftType';
 import SubjectType from '../models/enums/SubjectType';
 
 import Subject from '../models/Subject';
 import ISecretariatRepository from '../repositories/ISecretariatRepository';
+import IStudentToSubjectRepository from '../repositories/IStudentToSubjectRepository';
 import ISubjectRepository from '../repositories/ISubjectRepository';
 import ITeacherRepository from '../repositories/ITeacherRepository';
+import formatSubject from '../utils/formatSubject';
 
 interface IRequestDTO {
   name: string;
@@ -17,6 +20,31 @@ interface IRequestDTO {
   subject_type: SubjectType;
   teacher_id: string;
   secretariat_id: string;
+}
+
+interface IRequestShowSubject {
+  subject_id: string;
+}
+
+interface IResponseShowSubject {
+  subject: {
+    id: string;
+    name: string;
+    code: string;
+    credits: number;
+    minimum_credits: number;
+    subject_type: SubjectType;
+  }
+  teacher: {
+    id: string;
+    name: string;
+  };
+  matriculed_students: {
+    id: string;
+    name: string;
+    matriculation: string;
+    study_shift: string;
+  }[];
 }
 
 @injectable()
@@ -29,6 +57,8 @@ class SubjectsService {
     private secretariatRepository: ISecretariatRepository,
     @inject('SubjectRepository')
     private subjectRepository: ISubjectRepository,
+    @inject('StudentToSubjectRepository')
+    private studentToSubjectRepository: IStudentToSubjectRepository,
   ) {}
 
   public async createSubject({ name, code, credits, minimum_credits,
@@ -47,7 +77,7 @@ class SubjectsService {
     }
 
     const subjectCodeExists = await this.subjectRepository.findByCode(code);
-
+    
     if(subjectCodeExists) {
       throw new AppError('Subject code is already in use.');
     }
@@ -81,17 +111,61 @@ class SubjectsService {
     const subjects = await this.subjectRepository.findAll();
 
     const formattedSubjects = subjects.map(subject => {
-      return Object.assign(subject, {
-        ...subject,
-        subject_type: SubjectType[subject.subject_type],
-        secretariat: {
-          ...subject.secretariat,
-          type: SecretariatType[subject.secretariat.type]
-        }
-      })
+      return formatSubject(subject);
     });
 
     return formattedSubjects;
+  }
+
+  public async showSubject({ subject_id }: IRequestShowSubject): Promise<IResponseShowSubject> {
+    const subject = await this.subjectRepository.findById(subject_id);
+
+    if(!subject) {
+      throw new AppError('Subject not found.', 404);
+    }
+
+    const subjectsToStudents = await this.studentToSubjectRepository.findAllBySubject(subject_id);
+
+    const matriculedStudents = subjectsToStudents.filter(subject1 => {
+      if(ConceptSubjectType[subject1.concept] === 'REGISTERED') {
+        if(!subject1.student) {
+          throw new AppError('Student not found', 404);
+        }
+      
+        return subject1;
+      }
+    });
+
+    const formattedMatriculedStudents = matriculedStudents.map(subject1 => {
+      return {
+        id: subject1.student.id,
+        name: subject1.student.name,
+        matriculation: subject1.student.matriculation,
+        study_shift: StudyShiftType[subject1.student.study_shift]
+      }
+    })
+
+    const formattedSubject = formatSubject(subject);
+
+    const subjectToReturn =  {
+      id: formattedSubject.id,
+      name: formattedSubject.name,
+      code: formattedSubject.code,
+      credits: formattedSubject.credits,
+      minimum_credits: formattedSubject.minimum_credits,
+      subject_type: formattedSubject.subject_type
+    }
+
+    const teacherToReturn = {
+      id: formattedSubject.teacher.id,
+      name: formattedSubject.name
+    }
+
+    return {
+      subject: subjectToReturn,
+      teacher: teacherToReturn,
+      matriculed_students: formattedMatriculedStudents
+    };
   }
 }
 
