@@ -38,7 +38,7 @@ class Subject {
   @Column('int')
   credits: number;
 
-  @Column({ unique: true })
+  @Column()
   minimum_credits: number;
 
   @Column('int')
