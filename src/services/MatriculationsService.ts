@@ -3,32 +3,47 @@ import { inject, injectable } from 'tsyringe';
 import AppError from '../errors/AppError';
 import ConceptSubjectType from '../models/enums/ConceptSubjectType';
 import SecretariatType from '../models/enums/SecretariatType';
-import StudyShiftType from '../models/enums/StudyShiftType';
-import SubjectType from '../models/enums/SubjectType';
 import Student from '../models/Student';
 
 import Subject from '../models/Subject';
 
-import IDeparmentRepository from '../repositories/IDepartamentRepository';
-import ISecretariatRepository from '../repositories/ISecretariatRepository';
 import IStudentRepository from '../repositories/IStudentRepository';
 import IStudentToSubjectRepository from '../repositories/IStudentToSubjectRepository';
 import ISubjectRepository from '../repositories/ISubjectRepository';
 import ITeacherRepository from '../repositories/ITeacherRepository';
 
-interface ISubject {
-  id: string;
-  name: string;
-}
+import formatStudent from '../utils/formatStudent';
+import formatSubject from '../utils/formatSubject';
 
 interface IRequestDTO {
   student_id: string;
-  subjects: ISubject[];
+  subjects: {
+    id: string;
+    name: string;
+  }[];
 }
 
 interface IResponseDTO {
   student: Student;
   subjects: Subject[];
+}
+
+interface IRequestShowMatriculationDTO {
+  student_id: string;
+}
+
+interface IResponseShowMatriculationDTO {
+  student: {
+    name: string;
+    matriculation: string;
+    type: SecretariatType;
+    departament: string;
+  };
+  subjects: {
+    name: string;
+    code: string;
+    teacher: string;
+  }[];
 }
 
 @injectable()
@@ -37,12 +52,8 @@ class MatriculationsService {
   constructor(
     @inject('TeacherRepository')
     private teacherRepository: ITeacherRepository,
-    @inject('SecretariatRepository')
-    private secretariatRepository: ISecretariatRepository,
     @inject('SubjectRepository')
     private subjectRepository: ISubjectRepository,
-    @inject('DepartamentRepository')
-    private departamentRepository: IDeparmentRepository,
     @inject('StudentRepository')
     private studentRepository: IStudentRepository,
     @inject('StudentToSubjectRepository')
@@ -57,7 +68,6 @@ class MatriculationsService {
     }
 
     const subjectsInDatabase = await this.subjectRepository.findAll();
-
 
     const selectedsSubjects = subjects.map(subject => {
       const subjectExists = subjectsInDatabase.find(subjectInDb => subjectInDb.id === subject.id);
@@ -88,8 +98,7 @@ class MatriculationsService {
 
     const paidSubjects = await this.studentToSubjectRepository.findAllByStudent(student.id);
     
-    const matriculationSubjects = await Promise.all(selectedsSubjects.map(async subject => {
-     
+    selectedsSubjects.forEach( subject => {
       const paidSubject = paidSubjects.find(paidSubject1 => paidSubject1.subject.id === subject.id);
       
       if(paidSubject) {
@@ -98,6 +107,9 @@ class MatriculationsService {
           throw new AppError(`Aluno já está matriculado ou já foi aprovado na matéria ${paidSubject.subject.name}`);
         }
       }
+    });
+
+    const matriculationSubjects = await Promise.all(selectedsSubjects.map(async subject => {
       
       const matriculationSubject = await this.studentToSubjectRepository.create({
         concept: 3,
@@ -109,24 +121,10 @@ class MatriculationsService {
     }));
 
     const formattedMatriculation = matriculationSubjects.map(subject => {
-      return Object.assign(subject, {
-        ...subject,
-        subject_type: SubjectType[subject.subject_type],
-        secretariat: {
-          ...subject.secretariat,
-          type: SecretariatType[subject.secretariat.type]
-        }
-      })
+      return formatSubject(subject);
     });
 
-    const formattedStudent = Object.assign(student, {
-      ...student,
-      study_shift: StudyShiftType[student.study_shift],
-      secretariat: {
-        ...student.secretariat,
-        type: SecretariatType[student.secretariat.type]
-      }
-    });
+    const formattedStudent = formatStudent(student);
 
     return {
       student: formattedStudent,
@@ -134,24 +132,43 @@ class MatriculationsService {
     }
   }
 
+  public async showMatriculation({ student_id }: IRequestShowMatriculationDTO): Promise<IResponseShowMatriculationDTO> {
 
+    const student = await this.studentRepository.findById(student_id);
 
-  // public async listAllSubjects(): Promise<Subject[]> {
-  //   const subjects = await this.subjectRepository.findAll();
+    if(!student) {
+      throw new AppError('Student not found', 404);
+    }
 
-  //   const formattedSubjects = subjects.map(subject => {
-  //     return Object.assign(subject, {
-  //       ...subject,
-  //       subject_type: SubjectType[subject.subject_type],
-  //       secretariat: {
-  //         ...subject.secretariat,
-  //         type: SecretariatType[subject.secretariat.type]
-  //       }
-  //     })
-  //   });
+    const studentToSubjectInfo = await this.studentToSubjectRepository.findAllByStudent(student_id);
 
-  //   return formattedSubjects;
-  // }
+    
+    const subjectsMatriculated = await Promise.all(studentToSubjectInfo.map(async data => {
+      const teacher = await this.teacherRepository.findById(data.subject.teacher_id);
+
+      if(!teacher) {
+        throw new AppError('Teacher not found', 404);
+      }
+
+      return {
+        name: data.subject.name,
+        code: data.subject.code,
+        teacher: teacher.name,
+      }
+    }));
+    
+    const formattedStudent = formatStudent(student);
+
+    return {
+      student: {
+        name: formattedStudent.name,
+        matriculation: formattedStudent.matriculation,
+        type: formattedStudent.secretariat.type,
+        departament: formattedStudent.departament.name
+      },
+      subjects: subjectsMatriculated
+    };
+  }
 }
 
 export default MatriculationsService;
