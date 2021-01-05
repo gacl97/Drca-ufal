@@ -7,5 +7,6 @@ const matriculationsController = new MatriculationsController();
 
 matriculationsRoutes.post('/', matriculationsController.create);
 // matriculationsRoutes.get('/', departamentsController.index);
+matriculationsRoutes.get('/proofOfRegistration', matriculationsController.show);
 
 export default matriculationsRoutes;
