@@ -38,15 +38,26 @@ class SubjectRepository implements ISubjectRepository {
     return subjects;
   }
 
-  // public async findById(id: string): Promise<Departament | undefined> {
-  //   const departament = await this.ormRepository.findOne({
-  //     where: {
-  //       id,
-  //     }
-  //   });
+  public async findById(id: string): Promise<Subject | undefined> {
+    const subject = await this.ormRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['teacher']
+    });
 
-  //   return departament;
-  // }
+    return subject;
+  }
+
+  public async findAllBySecretariat(secretariat_id: string): Promise<Subject[]> {
+    const subjects = await this.ormRepository.find({
+      where: {
+        secretariat_id
+      }
+    });
+
+    return subjects;
+  }
 }
 
 export default SubjectRepository;
