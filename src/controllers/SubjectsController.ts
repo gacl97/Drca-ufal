@@ -36,6 +36,18 @@ class SubjectsController {
 
     return response.json(subjects);
   }
+
+  public async show(request: Request, response: Response): Promise<Response> {
+    const { subject_id } = request.params;
+
+    const showSubject = container.resolve(SubjectsService);
+
+    const subject = await showSubject.showSubject({
+      subject_id,
+    });
+
+    return response.json(subject);
+  }
 }
 
 export default SubjectsController;
