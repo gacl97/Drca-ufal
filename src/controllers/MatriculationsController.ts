@@ -19,6 +19,18 @@ class MatriculationsController {
     return response.json(matriculation);
   }
 
+  public async show(request: Request, response: Response): Promise<Response> {
+    const { student_id } = request.body;
+
+    const getProofOfRegistration = container.resolve(MatriculationsService);
+
+    const proofOfRegistration = await getProofOfRegistration.showMatriculation({
+      student_id
+    });
+
+    return response.json(proofOfRegistration);
+  }
+
   // public async index(request: Request, response: Response): Promise<Response> {
   //   const listAllSubjects = container.resolve(SubjectsService);
 
