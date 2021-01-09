@@ -1,8 +1,10 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import Student from "./Student";
-import Subject from "./Subject";
+import { Exclude } from 'class-transformer';
 
 import ConceptSubjectType from './enums/ConceptSubjectType';
+
+import Student from "./Student";
+import Subject from "./Subject";
 
 @Entity('students_subjects')
 class StudentToSubject {
@@ -31,9 +33,11 @@ class StudentToSubject {
   @ManyToOne(() => Student, student => student.studentToSubject)
   student: Student;
 
+  @Exclude()
   @CreateDateColumn()
   created_at: Date;
 
+  @Exclude()
   @UpdateDateColumn()
   updated_at: Date;
 }

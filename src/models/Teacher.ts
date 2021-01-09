@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Exclude } from 'class-transformer';
+
 import Departament from './Departament';
 import Subject from './Subject';
-
 
 @Entity('teachers')
 class Teacher {
@@ -15,6 +16,7 @@ class Teacher {
   @OneToMany(() => Subject, subject => subject.teacher)
   subjects: Subject[];
 
+  @Exclude()
   @Column()
   departament_id: string;
 
@@ -30,9 +32,11 @@ class Teacher {
   @Column({ unique: true })
   matriculation: string;
 
+  @Exclude()
   @CreateDateColumn()
   created_at: Date;
 
+  @Exclude()
   @UpdateDateColumn()
   updated_at: Date;
 }

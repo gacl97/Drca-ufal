@@ -1,4 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Exclude } from 'class-transformer';
+
 import Secretariat from './Secretariat';
 import Teacher from './Teacher';
 import Student from './Student';
@@ -21,9 +23,11 @@ class Departament {
   @OneToMany(() => Student, student => student.departament)
   students: Student[];
 
+  @Exclude()
   @CreateDateColumn()
   created_at: Date;
 
+  @Exclude()
   @UpdateDateColumn()
   updated_at: Date;
 }

@@ -1,7 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Exclude } from 'class-transformer';
+
+import StudyShiftType from './enums/StudyShiftType';
 
 import Departament from './Departament';
-import StudyShiftType from './enums/StudyShiftType';
 import Secretariat from './Secretariat';
 import StudentToSubject from './StudentToSubject';
 
@@ -15,6 +17,7 @@ class Student {
   @JoinColumn({ name: 'departament_id'})
   departament: Departament;
 
+  @Exclude()
   @Column()
   departament_id: string;
 
@@ -22,6 +25,7 @@ class Student {
   @JoinColumn({ name: 'secretariat_id' })
   secretariat: Secretariat;
 
+  @Exclude()
   @Column()
   secretariat_id: string;
 
@@ -46,9 +50,11 @@ class Student {
   @Column('int')
   current_credits: number;
 
+  @Exclude()
   @CreateDateColumn()
   created_at: Date;
 
+  @Exclude()
   @UpdateDateColumn()
   updated_at: Date;
 }
