@@ -42,35 +42,16 @@ class StudentToSubjectRepository implements IStudentToSubjectRepository {
     return studentToSubject;
   }
 
-  
+  public async findOneByStudentAndSubject(student_id: string, subject_id: string): Promise<StudentToSubject | undefined> {
+    const studentToSubject = await this.ormRepository.findOne({
+      where: {
+        subject: subject_id,
+        student: student_id
+      }
+    });
 
-  // public async findByEmail(email: string): Promise<Student | undefined> {
-  //   const student = await this.ormRepository.findOne({
-  //     where: {
-  //       email,
-  //     }
-  //   });
-
-  //   return student;
-  // }
-
-  // public async findAll(): Promise<Student[]> {
-  //   const students = await this.ormRepository.find({
-  //     relations: ['departament', 'secretariat']
-  //   });
-
-  //   return students;
-  // }
-
-  // public async findById(id: string): Promise<Student | undefined> {
-  //   const student = await this.ormRepository.findOne({
-  //     where: {
-  //       id,
-  //     }
-  //   });
-
-  //   return student;
-  // }
+    return studentToSubject;
+  }  
 }
 
 export default StudentToSubjectRepository;
