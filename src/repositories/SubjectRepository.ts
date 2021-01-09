@@ -32,7 +32,7 @@ class SubjectRepository implements ISubjectRepository {
 
   public async findAll(): Promise<Subject[]> {
     const subjects = await this.ormRepository.find({
-      relations: ['secretariat', 'teacher']
+      relations: ['secretariat', 'teacher', 'pre_requisits']
     });
 
     return subjects;
@@ -43,7 +43,7 @@ class SubjectRepository implements ISubjectRepository {
       where: {
         id,
       },
-      relations: ['teacher']
+      relations: ['teacher', 'pre_requisits']
     });
 
     return subject;
@@ -53,7 +53,8 @@ class SubjectRepository implements ISubjectRepository {
     const subjects = await this.ormRepository.find({
       where: {
         secretariat_id
-      }
+      },
+      relations: ['pre_requisits']
     });
 
     return subjects;
