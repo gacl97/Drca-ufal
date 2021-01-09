@@ -4,6 +4,7 @@ import AppError from '../errors/AppError';
 import ConceptSubjectType from '../models/enums/ConceptSubjectType';
 import SecretariatType from '../models/enums/SecretariatType';
 import Student from '../models/Student';
+import StudentToSubject from '../models/StudentToSubject';
 
 import Subject from '../models/Subject';
 
@@ -46,6 +47,14 @@ interface IResponseShowMatriculationDTO {
   }[];
 }
 
+interface IRequestUpdateGradeDTO {
+  student_id: string;
+  subject_id: string;
+  ab1: number;
+  ab2: number;
+  reavaluation: number;
+}
+
 @injectable()
 class MatriculationsService {
 
@@ -75,6 +84,7 @@ class MatriculationsService {
       if(!subjectExists) {
         throw new AppError(`Subject: ${subject.name} not found`, 404);
       }
+
       if(subjectExists.secretariat.departament_id !== student.departament_id) {
         throw new AppError(`Selected subject ${subjectExists.name} is not from the same department as the student`);
       }
@@ -98,15 +108,31 @@ class MatriculationsService {
 
     const paidSubjects = await this.studentToSubjectRepository.findAllByStudent(student.id);
     
-    selectedsSubjects.forEach( subject => {
-      const paidSubject = paidSubjects.find(paidSubject1 => paidSubject1.subject.id === subject.id);
+    selectedsSubjects.forEach(subject => {
+      const isPaidSubject = paidSubjects.find(subject1 => subject1.subject.id === subject.id);
       
-      if(paidSubject) {
+      if(isPaidSubject) {
         
-        if(ConceptSubjectType[paidSubject.concept] === 'APPROVED' || ConceptSubjectType[paidSubject.concept] === 'REGISTERED') {
-          throw new AppError(`Aluno já está matriculado ou já foi aprovado na matéria ${paidSubject.subject.name}`);
+        if(ConceptSubjectType[isPaidSubject.concept] === 'APPROVED' || ConceptSubjectType[isPaidSubject.concept] === 'REGISTERED') {
+          throw new AppError(`Aluno já está matriculado ou já foi aprovado na matéria ${isPaidSubject.subject.name}`);
         }
       }
+
+      subject.pre_requisits.forEach(pre_requisit => {
+
+        if(student.current_credits < pre_requisit.minimum_credits) {
+          throw new AppError(`Aluno não possui os créditos minimos para matricular na matéria ${pre_requisit.name}.`);
+        }
+
+        const isPaidPreRequist = paidSubjects.find(subject1 => subject1.subject.id === pre_requisit.id);
+
+        if(isPaidPreRequist) {
+          if(ConceptSubjectType[isPaidPreRequist.concept] !== 'APPROVED' && ConceptSubjectType[isPaidPreRequist.concept] !== 'REGISTERED') {
+            throw new AppError(`Aluno não está matriculado ou não foi aprovado na matéria ${isPaidPreRequist.subject.name}`);
+          }
+        }
+      });
+
     });
 
     const matriculationSubjects = await Promise.all(selectedsSubjects.map(async subject => {
@@ -133,7 +159,6 @@ class MatriculationsService {
   }
 
   public async showMatriculation({ student_id }: IRequestShowMatriculationDTO): Promise<IResponseShowMatriculationDTO> {
-
     const student = await this.studentRepository.findById(student_id);
 
     if(!student) {
@@ -142,7 +167,6 @@ class MatriculationsService {
 
     const studentToSubjectInfo = await this.studentToSubjectRepository.findAllByStudent(student_id);
 
-    
     const subjectsMatriculated = await Promise.all(studentToSubjectInfo.map(async data => {
       const teacher = await this.teacherRepository.findById(data.subject.teacher_id);
 
@@ -157,17 +181,67 @@ class MatriculationsService {
       }
     }));
     
-    const formattedStudent = formatStudent(student);
+    const { name, matriculation, secretariat, departament } = formatStudent(student);
 
     return {
       student: {
-        name: formattedStudent.name,
-        matriculation: formattedStudent.matriculation,
-        type: formattedStudent.secretariat.type,
-        departament: formattedStudent.departament.name
+        name,
+        matriculation,
+        type: secretariat.type,
+        departament: departament.name
       },
       subjects: subjectsMatriculated
     };
+  }
+
+  public async updateGrade({ student_id, subject_id, ab1, ab2, reavaluation }: IRequestUpdateGradeDTO): Promise<void> {
+
+    if(ab1 > 10 || ab2 > 10 || reavaluation > 10) {
+      throw new AppError('Grades cannot be greater than 10.');
+    }
+
+    if(ab1 < 0 || ab2 < 0 || reavaluation < 0) {
+      throw new AppError('Grades cannot be less than 0.');
+    }
+
+    const student = await this.studentRepository.findById(student_id);
+
+    if(!student) {
+      throw new AppError('Student not found.', 404);
+    }
+
+    const subjectInfos = await this.studentToSubjectRepository.findOneByStudentAndSubject(student_id, subject_id);
+
+    if(!subjectInfos) {
+      throw new AppError('Student is not enrolled in this subject.');
+    }
+
+    if(subjectInfos.ab1 === null && ab1 === undefined) {
+      throw new AppError('To update other grades it is necessary to register ab1 first.');
+    }
+    
+    if(subjectInfos.ab2 === null && ab2 === undefined && reavaluation >= 0) {
+      throw new AppError('To register the revaluation grade it is necessary to register the ab2 grade first.');
+    }
+    
+    // if(reavaluation >= 0) {
+    //   if()
+    // }
+    // console.log('--> ', subjectInfos);
+    // if()
+
+
+
+    console.log(reavaluation)
+
+    // Object.assign(subjectInfos, {
+    //   ...subjectInfos,
+    //   ab1,
+    //   ab2
+    // });
+
+    
+
   }
 }
 
