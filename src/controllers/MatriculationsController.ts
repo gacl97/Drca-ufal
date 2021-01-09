@@ -20,7 +20,7 @@ class MatriculationsController {
   }
 
   public async show(request: Request, response: Response): Promise<Response> {
-    const { student_id } = request.body;
+    const { student_id } = request.params;
 
     const getProofOfRegistration = container.resolve(MatriculationsService);
 
@@ -31,13 +31,21 @@ class MatriculationsController {
     return response.json(proofOfRegistration);
   }
 
-  // public async index(request: Request, response: Response): Promise<Response> {
-  //   const listAllSubjects = container.resolve(SubjectsService);
+  public async update(request: Request, response: Response): Promise<Response> {
+    const { student_id, subject_id, ab1, ab2, reavaluation } = request.body;
 
-  //   const subjects = await listAllSubjects.listAllSubjects();
+    const updateGrade = container.resolve(MatriculationsService);
 
-  //   return response.json(subjects);
-  // }
+    const subjectUpdate = await updateGrade.updateGrade({
+      student_id,
+      subject_id,
+      ab1,
+      ab2,
+      reavaluation
+    });
+
+    return response.json(subjectUpdate);
+  }
 }
 
 export default MatriculationsController;
