@@ -6,7 +6,7 @@ const matriculationsRoutes = Router();
 const matriculationsController = new MatriculationsController();
 
 matriculationsRoutes.post('/', matriculationsController.create);
-// matriculationsRoutes.get('/', departamentsController.index);
-matriculationsRoutes.get('/proofOfRegistration', matriculationsController.show);
+matriculationsRoutes.get('/proofOfRegistration/:student_id', matriculationsController.show);
+matriculationsRoutes.patch('/grades', matriculationsController.update);
 
 export default matriculationsRoutes;
