@@ -4,6 +4,7 @@ import AppError from '../errors/AppError';
 import SecretariatType from '../models/enums/SecretariatType';
 import SubjectType from '../models/enums/SubjectType';
 import Secretariat from '../models/Secretariat';
+import Subject from '../models/Subject';
 
 import IDeparmentRepository from '../repositories/IDepartamentRepository';
 import ISecretariatRepository from '../repositories/ISecretariatRepository';
@@ -18,22 +19,8 @@ interface IRequestDTO {
 
 interface IResponseListAllSecretariatsDTO {
   secretariats: {
-    secretariat: {
-      id: string;
-      type: SecretariatType;
-      departament: {
-        id: string;
-        name: string;
-      }
-    };
-    subjects: {
-      id: string;
-      name: string;
-      code: string;
-      credits: number;
-      minimum_credits: number;
-      subject_type: SubjectType;
-    }[];
+    secretariat: Secretariat;
+    subjects: Subject[];
   }[]
 }
 
@@ -86,32 +73,12 @@ class SecretariatsService {
     const secretariatsToReturn = await Promise.all(secretariats.map(async secretariat => {
       const subjectsBySecretariat = await this.subjectRepository.findAllBySecretariat(secretariat.id);
 
-      const formattedSecretariat = formatSecretariat(secretariat);
-
-      const secretariatFormatted = {
-        id: formattedSecretariat.id,
-        type: formattedSecretariat.type,
-        departament: {
-          id: formattedSecretariat.departament.id,
-          name: formattedSecretariat.departament.name
-        }
-      }
-
       const subjects = subjectsBySecretariat.map(subject => {
-        subject = formatSubject(subject);
-
-        return {
-          id: subject.id,
-          name: subject.name,
-          code: subject.code,
-          credits: subject.credits,
-          minimum_credits: subject.minimum_credits,
-          subject_type: subject.subject_type, 
-        }
+        return formatSubject(subject);
       });
 
       return {
-        secretariat: secretariatFormatted,
+        secretariat: formatSecretariat(secretariat),
         subjects
       };
     }));

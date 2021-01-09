@@ -8,6 +8,7 @@ import Student from '../models/Student';
 import IDeparmentRepository from '../repositories/IDepartamentRepository';
 import ISecretariatRepository from '../repositories/ISecretariatRepository';
 import IStudentRepository from '../repositories/IStudentRepository';
+import formatStudent from '../utils/formatStudent';
 
 interface IRequestDTO {
   name: string;
@@ -62,7 +63,7 @@ class StudentsService {
       throw new AppError('Departament not found', 404);
     }
 
-    const student = await this.studentRepository.create({
+    let student = await this.studentRepository.create({
       cpf,
       departament_id,
       email,
@@ -85,10 +86,8 @@ class StudentsService {
     const students = await this.studentRepository.findAll();
 
     const formattedStudents = students.map(student => {
-      return Object.assign(student, {
-        ...student,
-        study_shift: StudyShiftType[student.study_shift]
-      })
+     
+      return formatStudent(student)
     });
 
     return formattedStudents;
