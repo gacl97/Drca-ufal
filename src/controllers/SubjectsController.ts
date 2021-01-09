@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
+import { classToClass } from 'class-transformer';
+
 import SubjectsService from '../services/SubjectsService';
 
 class SubjectsController {
@@ -12,6 +14,7 @@ class SubjectsController {
     subject_type,
     teacher_id,
     secretariat_id,
+    pre_requisits
   } = request.body;
 
     const createSubject = container.resolve(SubjectsService);
@@ -24,6 +27,7 @@ class SubjectsController {
       subject_type,
       teacher_id,
       secretariat_id,
+      pre_requisits
     });
 
     return response.json(subject);
@@ -34,7 +38,7 @@ class SubjectsController {
 
     const subjects = await listAllSubjects.listAllSubjects();
 
-    return response.json(subjects);
+    return response.json(classToClass(subjects));
   }
 
   public async show(request: Request, response: Response): Promise<Response> {
@@ -46,7 +50,7 @@ class SubjectsController {
       subject_id,
     });
 
-    return response.json(subject);
+    return response.json(classToClass(subject));
   }
 }
 

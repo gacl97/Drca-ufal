@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
+import { classToClass } from 'class-transformer';
+
 import TeacherService from '../services/TeacherService';
 
 class TeachersController {
@@ -28,7 +30,7 @@ class TeachersController {
 
     const teachers = await listAllTeachers.listAllTeachers();
 
-    return response.json(teachers);
+    return response.json(classToClass(teachers));
   }
 }
 
