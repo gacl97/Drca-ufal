@@ -31,21 +31,21 @@ class MatriculationsController {
     return response.json(proofOfRegistration);
   }
 
-  public async update(request: Request, response: Response): Promise<Response> {
-    const { student_id, subject_id, ab1, ab2, reavaluation } = request.body;
+  // public async update(request: Request, response: Response): Promise<Response> {
+  //   const { student_id, subject_id, ab1, ab2, reavaluation } = request.body;
 
-    const updateGrade = container.resolve(MatriculationsService);
+  //   const updateGrade = container.resolve(MatriculationsService);
 
-    const subjectUpdate = await updateGrade.updateGrade({
-      student_id,
-      subject_id,
-      ab1,
-      ab2,
-      reavaluation
-    });
+  //   const subjectUpdate = await updateGrade.updateGrade({
+  //     student_id,
+  //     subject_id,
+  //     ab1,
+  //     ab2,
+  //     reavaluation
+  //   });
 
-    return response.json(subjectUpdate);
-  }
+  //   return response.json(subjectUpdate);
+  // }
 }
 
 export default MatriculationsController;
