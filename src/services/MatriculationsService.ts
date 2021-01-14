@@ -77,7 +77,7 @@ class MatriculationsService {
     }
 
     const subjectsInDatabase = await this.subjectRepository.findAll();
-
+    
     const selectedsSubjects = subjects.map(subject => {
       const subjectExists = subjectsInDatabase.find(subjectInDb => subjectInDb.id === subject.id);
 
@@ -112,7 +112,6 @@ class MatriculationsService {
       const isPaidSubject = paidSubjects.find(subject1 => subject1.subject.id === subject.id);
       
       if(isPaidSubject) {
-        
         if(ConceptSubjectType[isPaidSubject.concept] === 'APPROVED' || ConceptSubjectType[isPaidSubject.concept] === 'REGISTERED') {
           throw new AppError(`Aluno já está matriculado ou já foi aprovado na matéria ${isPaidSubject.subject.name}`);
         }
@@ -132,7 +131,6 @@ class MatriculationsService {
           }
         }
       });
-
     });
 
     const matriculationSubjects = await Promise.all(selectedsSubjects.map(async subject => {
@@ -194,35 +192,35 @@ class MatriculationsService {
     };
   }
 
-  public async updateGrade({ student_id, subject_id, ab1, ab2, reavaluation }: IRequestUpdateGradeDTO): Promise<void> {
+  // public async updateGrade({ student_id, subject_id, ab1, ab2, reavaluation }: IRequestUpdateGradeDTO): Promise<void> {
 
-    if(ab1 > 10 || ab2 > 10 || reavaluation > 10) {
-      throw new AppError('Grades cannot be greater than 10.');
-    }
+    // if(ab1 > 10 || ab2 > 10 || reavaluation > 10) {
+    //   throw new AppError('Grades cannot be greater than 10.');
+    // }
 
-    if(ab1 < 0 || ab2 < 0 || reavaluation < 0) {
-      throw new AppError('Grades cannot be less than 0.');
-    }
+    // if(ab1 < 0 || ab2 < 0 || reavaluation < 0) {
+    //   throw new AppError('Grades cannot be less than 0.');
+    // }
 
-    const student = await this.studentRepository.findById(student_id);
+    // const student = await this.studentRepository.findById(student_id);
 
-    if(!student) {
-      throw new AppError('Student not found.', 404);
-    }
+    // if(!student) {
+    //   throw new AppError('Student not found.', 404);
+    // }
 
-    const subjectInfos = await this.studentToSubjectRepository.findOneByStudentAndSubject(student_id, subject_id);
+    // const subjectInfos = await this.studentToSubjectRepository.findOneByStudentAndSubject(student_id, subject_id);
 
-    if(!subjectInfos) {
-      throw new AppError('Student is not enrolled in this subject.');
-    }
+    // if(!subjectInfos) {
+    //   throw new AppError('Student is not enrolled in this subject.');
+    // }
 
-    if(subjectInfos.ab1 === null && ab1 === undefined) {
-      throw new AppError('To update other grades it is necessary to register ab1 first.');
-    }
+    // if(subjectInfos.ab1 === null && ab1 === undefined) {
+    //   throw new AppError('To update other grades it is necessary to register ab1 first.');
+    // }
     
-    if(subjectInfos.ab2 === null && ab2 === undefined && reavaluation >= 0) {
-      throw new AppError('To register the revaluation grade it is necessary to register the ab2 grade first.');
-    }
+    // if(subjectInfos.ab2 === null && ab2 === undefined && reavaluation >= 0) {
+    //   throw new AppError('To register the revaluation grade it is necessary to register the ab2 grade first.');
+    // }
     
     // if(reavaluation >= 0) {
     //   if()
@@ -230,19 +228,12 @@ class MatriculationsService {
     // console.log('--> ', subjectInfos);
     // if()
 
-
-
-    console.log(reavaluation)
-
     // Object.assign(subjectInfos, {
     //   ...subjectInfos,
     //   ab1,
     //   ab2
     // });
-
-    
-
-  }
+  // }
 }
 
 export default MatriculationsService;
