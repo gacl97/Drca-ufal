@@ -24,15 +24,16 @@ class SecretariatRepository implements ISecretariatRepository {
     return secretariat;
   }
 
-  public async findByType(type: SecretariatType): Promise<Secretariat | undefined> {
-    const departament = await this.ormRepository.findOne({
+  public async findByType(departament_id: string, type: SecretariatType): Promise<Secretariat | undefined> {
+    const secretariat = await this.ormRepository.findOne({
       where: {
         type,
+        departament_id
       },
       relations: ['departament']
     });
 
-    return departament;
+    return secretariat;
   }
 
   public async findAll(): Promise<Secretariat[]> {
