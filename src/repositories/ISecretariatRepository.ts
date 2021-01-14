@@ -5,7 +5,7 @@ import ICreateSecretariatDTO from "../dtos/ICreateSecretariatDTO";
 
 export default interface ISecretariatRepository {
   create(data: ICreateSecretariatDTO): Promise<Secretariat>;
-  findByType(type: SecretariatType): Promise<Secretariat | undefined>;
+  findByType(departament_id: string,type: SecretariatType): Promise<Secretariat | undefined>;
   findById(id: string): Promise<Secretariat | undefined>;
   findAll(): Promise<Secretariat[]>;
 }
