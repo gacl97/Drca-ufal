@@ -2,7 +2,6 @@ import { inject, injectable } from 'tsyringe';
 import AppError from '../errors/AppError';
 
 import SecretariatType from '../models/enums/SecretariatType';
-import SubjectType from '../models/enums/SubjectType';
 import Secretariat from '../models/Secretariat';
 import Subject from '../models/Subject';
 
@@ -18,10 +17,8 @@ interface IRequestDTO {
 }
 
 interface IResponseListAllSecretariatsDTO {
-  secretariats: {
-    secretariat: Secretariat;
-    subjects: Subject[];
-  }[]
+  secretariat: Secretariat;
+  subjects: Subject[];
 }
 
 @injectable()
@@ -41,17 +38,17 @@ class SecretariatsService {
     if(!SecretariatType[type]) {
       throw new AppError('Type of secretariat not found', 404)
     }
-
-    const secreatariatExists = await this.secretariatRepository.findByType(type);
-
-    if(secreatariatExists) {
-      throw new AppError('This secretariat already exists.');
-    }
-
+    
     const departamentExists = await this.departamentRepository.findById(departament_id);
 
     if(!departamentExists) {
       throw new AppError('Departament not found', 404);
+    }
+
+    const secreatariatExists = await this.secretariatRepository.findByType(departament_id, type);
+
+    if(secreatariatExists) {
+      throw new AppError('This secretariat already exists.');
     }
 
     const secretariat = await this.secretariatRepository.create({
@@ -67,7 +64,7 @@ class SecretariatsService {
     return secretariat;
   }
 
-  public async listAllSecretariats(): Promise<IResponseListAllSecretariatsDTO> {
+  public async listAllSecretariats(): Promise<IResponseListAllSecretariatsDTO[]> {
     const secretariats = await this.secretariatRepository.findAll();
 
     const secretariatsToReturn = await Promise.all(secretariats.map(async secretariat => {
@@ -83,9 +80,7 @@ class SecretariatsService {
       };
     }));
 
-    return {
-      secretariats: secretariatsToReturn
-    };
+    return secretariatsToReturn;
   }
 }
 
