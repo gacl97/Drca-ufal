@@ -30,7 +30,7 @@ class StudentToSubject {
   @ManyToOne(() => Subject, subject => subject.studentToSubject)
   subject: Subject;
 
-  @ManyToOne(() => Student, student => student.studentToSubject)
+  @ManyToOne(() => Student, student => student.studentToSubject, { onDelete: 'CASCADE', onUpdate: 'CASCADE'})
   student: Student;
 
   @Exclude()
