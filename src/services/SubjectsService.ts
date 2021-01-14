@@ -33,7 +33,7 @@ interface IRequestShowSubject {
 
 interface IResponseShowSubject {
   subject: Subject;
-  matriculed_students: {
+  matriculated_students: {
     id: string;
     name: string;
     matriculation: string;
@@ -132,8 +132,6 @@ class SubjectsService {
       return formatSubject(subject);
     });
 
-    console.log(formattedSubjects)
-
     return formattedSubjects;
   }
 
@@ -146,12 +144,8 @@ class SubjectsService {
 
     const subjectsToStudents = await this.studentToSubjectRepository.findAllBySubject(subject_id);
 
-    const matriculedStudents = subjectsToStudents.filter(subjectToFilter => {
+    const matriculatedStudents = subjectsToStudents.filter(subjectToFilter => {
       if(ConceptSubjectType[subjectToFilter.concept] === 'REGISTERED') {
-
-        if(!subjectToFilter.student) {
-          throw new AppError('Student not found', 404);
-        }
       
         return subjectToFilter;
       }
@@ -161,7 +155,7 @@ class SubjectsService {
 
     return {
       subject: formatSubject(subject),
-      matriculed_students: matriculedStudents
+      matriculated_students: matriculatedStudents
     };
   }
 }
