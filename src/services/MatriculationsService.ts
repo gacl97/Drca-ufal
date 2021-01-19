@@ -4,7 +4,6 @@ import AppError from '../errors/AppError';
 import ConceptSubjectType from '../models/enums/ConceptSubjectType';
 import SecretariatType from '../models/enums/SecretariatType';
 import Student from '../models/Student';
-import StudentToSubject from '../models/StudentToSubject';
 
 import Subject from '../models/Subject';
 
@@ -47,13 +46,13 @@ interface IResponseShowMatriculationDTO {
   }[];
 }
 
-interface IRequestUpdateGradeDTO {
-  student_id: string;
-  subject_id: string;
-  ab1: number;
-  ab2: number;
-  reavaluation: number;
-}
+// interface IRequestUpdateGradeDTO {
+//   student_id: string;
+//   subject_id: string;
+//   ab1: number;
+//   ab2: number;
+//   reavaluation: number;
+// }
 
 @injectable()
 class MatriculationsService {
