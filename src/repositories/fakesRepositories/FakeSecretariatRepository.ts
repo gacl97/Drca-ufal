@@ -1,4 +1,4 @@
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 
 import ICreateSecretariatDTO from '../../dtos/ICreateSecretariatDTO';
 import ISecretariatRepository from '../ISecretariatRepository';

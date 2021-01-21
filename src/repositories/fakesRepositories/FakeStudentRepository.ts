@@ -1,5 +1,6 @@
+import { v4 as uuid } from 'uuid';
+
 import ICreateStudentDTO from '../../dtos/ICreateStudentDTO';
-import { uuid } from 'uuidv4';
 
 import IStudentRepository from '../IStudentRepository';
 

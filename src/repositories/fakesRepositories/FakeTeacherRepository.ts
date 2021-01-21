@@ -1,4 +1,4 @@
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 
 import ICreateTeacherDTO from '../../dtos/ICreateTeacherDTO';
 import ITeacherRepository from '../ITeacherRepository';

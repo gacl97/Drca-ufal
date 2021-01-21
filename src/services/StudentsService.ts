@@ -1,5 +1,5 @@
 import { inject, injectable } from 'tsyringe';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 
 import AppError from '../errors/AppError';
 import StudyShiftType from '../models/enums/StudyShiftType';
