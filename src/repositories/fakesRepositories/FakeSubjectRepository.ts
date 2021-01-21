@@ -13,7 +13,7 @@ class FakeSubjectRepository implements ISubjectRepository {
   }
 
   public async create(data: ICreateSubjectDTO): Promise<Subject> {
-    let subject = new Subject;
+    let subject = new Subject();
 
     Object.assign(subject, {
       id: uuid(),

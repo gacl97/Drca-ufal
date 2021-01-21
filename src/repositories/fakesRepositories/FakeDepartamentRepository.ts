@@ -12,7 +12,7 @@ class FakeDepartamentRepository implements IDeparmentRepository {
   }
 
   public async create(data: ICreateDepartamentDTO): Promise<Departament> {
-    const departament = new Departament;
+    const departament = new Departament();
 
     Object.assign(departament, {
       id: uuid(),
